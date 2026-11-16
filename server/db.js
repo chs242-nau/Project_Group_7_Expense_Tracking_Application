@@ -1,12 +1,11 @@
-const { Pool } = require("pg");
-require("dotenv").config();
+require('dotenv').config();
+const { Pool, types } = require('pg');
 
-const pool = new Pool({
-    user: process.env.DB_USER,
-    host: process.env.DB_HOST,
-    database: process.env.DB_NAME,
-    password: process.env.DB_PASSWORD,
-    port: process.env.DB_PORT
-});
+// By default pg gives NUMERIC columns back as strings when they need to be numbers
+types.setTypeParser(1700, (value) => parseFloat(value));
 
-module.exports = pool;
+// By default pg turns DATE columns into JS Date objects, which can shift the day because timezones. 
+types.setTypeParser(1082, (value) => value);
+
+// Read settings from the .env file
+module.exports = new Pool();
